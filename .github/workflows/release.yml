@@ -1,0 +1,28 @@
+name: Publish release
+run-name: Publish release for tag ${{ github.ref_name }} by @${{ github.actor }}
+on:
+  push:
+    tags:
+      - "v*"
+permissions:
+  contents: write
+  packages: write
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    name: Package and publish release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
